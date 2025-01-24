@@ -1,17 +1,44 @@
-import pandas as pd
 import sqlite3
+import pandas as pd
 
-# Path to CSV file
-csv_file = "data/raw/scraped_data.csv"
-db_file = "data/database.db"
+# Define the file paths
+PROCESSED_DATA_PATH = "YC-Scraper/scraper/ycombinator/scraper/data/processed/scraped_data.csv"
+DATABASE_PATH = "data/database.db"
 
-# Read CSV and convert to SQLite
-def create_database():
-    df = pd.read_csv(csv_file)
-    conn = sqlite3.connect(db_file)
-    df.to_sql("startups", conn, if_exists="replace", index=False)
+def load_data_to_db():
+    """Load data from the processed CSV file into SQLite."""
+    # Load the processed CSV
+    data = pd.read_csv(PROCESSED_DATA_PATH)
+
+    # Establish SQLite connection
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+
+    # Create table if it doesn't exist
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS startups (
+        company_id INTEGER PRIMARY KEY,
+        company_name TEXT,
+        short_description TEXT,
+        long_description TEXT,
+        batch TEXT,
+        status TEXT,
+        tags TEXT,
+        location TEXT,
+        country TEXT,
+        year_founded INTEGER,
+        num_founders INTEGER,
+        founders_names TEXT,
+        team_size INTEGER,
+        website TEXT,
+        cb_url TEXT,
+        linkedin_url TEXT
+    )
+    """)
+    
+    # Insert data into the database
+    data.to_sql("startups", conn, if_exists="replace", index=False)
+
+    conn.commit()
     conn.close()
-    print("Database created successfully.")
-
-if __name__ == "__main__":
-    create_database()
+    print("Data loaded successfully into the database.")
