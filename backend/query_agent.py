@@ -1,28 +1,31 @@
-from langchain.agents import AgentExecutor
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_cohere.chat_models import ChatCohere
-from langchain_community.utilities.sql_database import SQLDatabase
-from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from langchain_ollama import ChatOllama
+from langchain_community.utilities import SQLDatabase
+from langchain_community.agent_toolkits.sql.base import create_sql_agent, SQLDatabaseToolkit
+
+# Set up the LLM
+llm = ChatOllama(model="llama3.2", temperature=0.1)
 
 import os
+from langchain_community.utilities.sql_database import SQLDatabase
 
-# API Key for Cohere
-os.environ["COHERE_API_KEY"] = "your_cohere_api_key"
+# Construct absolute path to the database
+db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/database.db"))
+db = SQLDatabase.from_uri(f"sqlite:///{db_path}")
 
-# Database and LLM configuration
-db = SQLDatabase.from_uri("sqlite:///data/database.db")
-llm = ChatCohere(model="command-r-plus", temperature=0.1, verbose=True)
+# Set up the SQL toolkit
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 
-# Agent setup
-prompt = ChatPromptTemplate.from_template("{input}")
-agent = toolkit.create_agent(prompt=prompt)
-agent_executor = AgentExecutor(agent=agent, tools=toolkit.get_tools(), verbose=True)
 
-def execute_query(query):
-    return agent_executor.invoke({"input": query})
+from langchain.agents import AgentExecutor
 
-if __name__ == "__main__":
-    query = "List 10 startups in the medical domain."
-    response = execute_query(query)
-    print(response["output"])
+agent_executor = AgentExecutor.from_agent_and_tools(
+    agent=agent,
+    tools=tools,
+    max_iterations=20,  # Increase the iteration limit (default is 15)
+    max_execution_time=60,  # Set time limit in seconds
+    verbose=True
+)
+
+# Create the SQL Agent
+def setup_sql_agent():
+    return create_sql_agent(toolkit=toolkit, llm=llm, verbose=True)
