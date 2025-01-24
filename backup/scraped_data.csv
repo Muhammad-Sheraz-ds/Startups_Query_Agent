@@ -1,0 +1,4 @@
+company_id,company_name,short_description,long_description,batch,status,tags,location,country,year_founded,num_founders,founders_names,team_size,website,cb_url,linkedin_url
+29233,Happenstance,People search powered by AI,"Happenstance is people search powered by AI.
+
+For example, you ask Happenstance ""find people who work on notification systems at big companies"", and it comes back with two who follow you on Twitter and five who are connected to your partners. That kind of thing you just can't do on LinkedIn.",W24,Active,artificial-intelligence,,,2023,1,Alex Teichman,3,https://happenstance.ai,,

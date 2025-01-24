@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+  frontend:
+    image: streamlit
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8501:8501"
+    command: streamlit run app.py
