@@ -1,78 +1,186 @@
-# Y Combinator Directory Scraper
 
-I built YC-Scraper to create a dataset of all the companies in the [Y Combinator directory](https://www.ycombinator.com/companies/). You can search for companies by industry, region, company size, and more in this directory.
+# Startups Query Agent
 
-## About Y Combinator
+Startups Query Agent is a comprehensive platform that collects, processes, and queries startup-related data with a focus on intelligent querying and user-friendly interaction. The platform leverages tools like Scrapy for web scraping, OpenAI's SQL Agent for natural language queries, Streamlit for an interactive frontend, and FastAPI for backend API services. The data pipeline is designed to be robust, modular, and easy to set up.
 
-Y Combinator is a startup accelerator that has invested in over 4,000 companies that have a combined valuation of over $600B. The overall goal of Y Combinator is to help startups really take off.
+---
 
-## Requirements
+## Features
 
-You must have [Firefox](https://www.mozilla.org/en-US/firefox/new/) and [geckodriver](https://github.com/mozilla/geckodriver/releases) installed. You can install `geckodriver` by running `brew install geckodriver`.
+- **Data Scraping**: Efficiently scrapes structured data of startups from Y Combinator using Scrapy.  
+- **ETL Pipeline**: Extracts, transforms, and loads data into an SQLite database for querying.  
+- **SQL Agent Integration**: Leverages OpenAI’s SQL Agent for seamless natural language queries.  
+- **Interactive Frontend**: Provides a Streamlit-based user interface for insights and queries.  
+- **Scalable Backend**: Uses FastAPI to handle API requests between the frontend and database.  
+- **Docker Support**: Fully containerized for easy deployment and scaling.
 
-Python packages include:
+---
 
-- [Scrapy](https://scrapy.org)
-- [Selenium](https://www.selenium.dev/documentation/)
-- [tqdm](https://tqdm.github.io)
-- [Pandas](https://pandas.pydata.org) (optional)
+## Project Structure
+
+```
+Startups-Query-Agent/
+├── Untitled.ipynb                  # Jupyter Notebook for prototyping and testing
+├── .gitignore                      # Git ignore file
+├── docker-compose.yml              # Docker Compose configuration
+├── setup.sh                        # Script to set up the virtual environment and dependencies
+├── requirements.txt                # General dependencies for the project
+├── README.md                       # Project documentation
+├── LICENSE                         # License file
+├── Dockerfile                      # Dockerfile for backend services
+├── a.py                            # Script to print folder structure
+├── backend/                        # Backend service folder
+│   ├── db_setup.py                 # Database setup and migration script
+│   ├── requirements.txt            # Backend-specific dependencies
+│   ├── etl.py                      # ETL script for transforming scraped data
+│   ├── app.py                      # FastAPI application file
+│   ├── query_agent.py              # SQL Agent setup using OpenAI
+├── data/                           # Folder containing database files
+│   ├── database.db                 # SQLite database for processed data
+├── YC-Scraper/                     # Folder for scraping-related code
+│   ├── .gitignore                  # Git ignore file for the scraper
+│   ├── requirements.txt            # Scraper-specific dependencies
+│   ├── README.md                   # Scraper-specific documentation
+│   ├── scraper/                    # Scraper implementation folder
+│   │   ├── scrapy.cfg              # Scrapy configuration file
+│   │   ├── Dockerfile              # Dockerfile for the scraper
+│   │   ├── data/                   # Folder for input and raw data
+│   │   │   ├── start_urls.txt      # List of URLs to scrape
+│   │   ├── scripts/                # Additional utility scripts
+│   │   │   ├── yc_links_extractor.py  # Script to extract Y Combinator links
+│   │   ├── scraper/                # Scraper output data folders
+│   │   │   ├── data/
+│   │   │   │   ├── raw/            # Folder for raw scraped data
+│   │   │   │   │   ├── scraped_data.csv
+│   │   │   │   ├── processed/      # Folder for processed data
+│   │   │   │   │   ├── processed_data.csv
+│   │   ├── ycombinator/            # Y Combinator-specific scraper logic
+│   │   │   ├── pipelines.py
+│   │   │   ├── items.py
+│   │   │   ├── middlewares.py
+│   │   │   ├── settings.py
+│   │   │   ├── __init__.py
+│   │   │   ├── spiders/            # Spider definitions
+│   │   │   │   ├── yscraper.py
+│   │   │   │   ├── __init__.py
+├── backup/                         # Backup of older data or experiments
+│   ├── 2023-02-27-yc-companies.csv
+│   ├── scraped_data.csv
+├── frontend/                       # Frontend service folder
+│   ├── requirements.txt            # Frontend-specific dependencies
+│   ├── app.py                      # Streamlit application file
+```
+
+---
+
+## Installation and Setup
+
+### Prerequisites
+
+- Python 3.10+
+- pip
+- Docker (optional for containerized setup)
+- OpenAI API Key (for SQL Agent)
+
+---
+
+### Step 1: Clone the Repository
+
+```bash
+git clone git@github.com:YourUsername/Startups-Query-Agent.git
+cd Startups-Query-Agent
+```
+
+---
+
+### Step 2: Set Up the Virtual Environment
+
+```bash
+bash setup.sh
+```
+
+---
+
+### Step 3: Provide the OpenAI API Key
+
+Add your OpenAI API key to the environment by creating a `.env` file in the `backend/` directory:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Alternatively, you can export the key directly:
+
+```bash
+export OPENAI_API_KEY=your_openai_api_key_here
+```
+
+---
+
+### Step 4: Run the Scraper
+
+Navigate to the scraper directory and run the Scrapy crawler:
+
+```bash
+cd YC-Scraper/scraper
+scrapy crawl yscraper
+```
+
+This will save the raw scraped data in `YC-Scraper/scraper/scraper/data/raw/scraped_data.csv`.
+
+---
+
+### Step 5: Process the Data
+
+Run the ETL script to process and save data into the SQLite database:
+
+```bash
+cd ../..
+python3 backend/etl.py
+```
+
+---
+
+### Step 6: Start Backend API
+
+Run the FastAPI backend:
+
+```bash
+cd backend
+python3 app.py
+```
+
+The API will be accessible at `http://127.0.0.1:8000`.
+
+---
+
+### Step 7: Start Frontend
+
+Launch the Streamlit frontend:
+
+```bash
+cd frontend
+streamlit run app.py
+```
+
+Access the Streamlit app at `http://127.0.0.1:8501`.
+
+---
 
 ## Usage
 
-1. Clone this repository
-2. Move to the `yc-scraper` directory
-    2. [Optional] Create an environment for `yc-scraper` (for example by ```conda create --name <env_name> --file requirements.txt```)
-3. Run `python yc_links_extractor.py`. This will fetch the individual URLs for the spider to crawl.
-4. Run `scrapy runspider scrapy-project/ycombinator/spiders/yscraper.py -o output.jl`. This generates a JSON lines file which you can read with Pandas:
+- Query startups via the Streamlit app using natural language (e.g., "List all startups founded in 2020").
+- Access API endpoints for more advanced use cases.
 
-```python
-import pandas as pd
-df = pd.read_json('./output.jl', lines=True)
-```
 
-## Dataset
 
-Check out the dataset I published on [Kaggle.com](https://www.kaggle.com/datasets/miguelcorraljr/y-combinator-directory).
+## License
 
-## Attributes
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-|  Attribute           |  Description | Data Type  |
-|-----------------------|---|---|
-| company_id            | Company id provided by YC  | int  |
-| company_name          | Company name  | string  |
-| short_description     | One-line description of the company  | string  |
-| long_description      | Long description of the company  | string  |
-| batch                 | Batch name provided by YC  | string  |
-| status                | Company status  | string  |
-| tags                  | Industry tags  | list  |
-| location              | Company location | string  |
-| country               | Company country  | string  |
-| year_founded          | Year the company was founded  | int  |
-| num_founders          | Number of founders  | int  |
-| founders_names        | Full names of the founders  | list  |
-| team_size             | Number of employees  | int  |
-| website               | Company website   | string  |
-| cb_url                | Company Crunchbase url  | string  |
-| linkedin_url          | Company LinkedIn url  | string  |
 
-## Sample Data
+## **Contributing**
+1. Fork the repository.
+2. Create a new branch.
+3. Submit a pull request.
 
-Note: I excluded 'short_description', 'long_description', 'cb_url', and 'linkedin_url'  in the sample data for brevity.
-
-| company_id | company_name | short_description                         | batch | status   | tags                                                      | location      | country | year_founded | num_founders | founders_names                                       | team_size | website                  |   |
-|------------|--------------|-------------------------------------------|-------|----------|-----------------------------------------------------------|---------------|---------|--------------|--------------|------------------------------------------------------|-----------|--------------------------|---|
-| 240        | Stripe       | Economic infrastructure for the internet. | S09   | Active   | ['Fintech', 'Banking as a Service', 'SaaS']               | San Francisco | US      |              | 2            | ['John Collison', 'Patrick Collison']                | 7000      | <http://stripe.com>        |   |
-| 271        | Airbnb       | Book accommodations around the world.     | W09   | Public   | ['Travel', 'Marketplace']                                 | San Francisco | US      | 2008         | 3            | ['Nathan Blecharczyk', 'Brian Chesky', 'Joe Gebbia'] | 6132      | <http://airbnb.com>        |   |
-| 325        | Dropbox      | Backup and share files in the cloud.      | S07   | Public   | []                                                        | San Francisco | US      | 2008         | 2            | ['Arash Ferdowsi', 'Drew Houston']                   | 4000      | <http://dropbox.com>       |   |
-| 379        | Reddit       | The frontpage of the internet.            | S05   | Acquired | ['Community', 'Social', 'Social Media', 'Social Network'] | San Francisco | US      |              | 1            | ['Steve Huffman']                                    | 201       | <http://reddit.com>        |   |
-| 439        | Coinbase     | Buy, sell, and manage cryptocurrencies.   | S12   | Public   | ['Crypto / Web3']                                         | San Francisco | US      | 2012         | 1            | ['Brian Armstrong']                                  | 6112      | <https://www.coinbase.com> |   |
-| 531        | DoorDash     | Restaurant delivery.                      | S13   | Public   | ['E-commerce', 'Marketplace']                             | San Francisco | US      | 2013         | 3            | ['Andy Fang', 'Stanley Tang', 'Tony Xu']             | 8600      | <http://doordash.com>      |   |
-
-## Meta
-
-Author: Miguel Corral Jr.  
-Email: <corraljrmiguel@gmail.com>  
-LinkedIn: <https://www.linkedin.com/in/imiguel>  
-GitHub: <https://github.com/corralm>
-
-Distributed under the MIT license. See [LICENSE](./LICENSE) for more information.
