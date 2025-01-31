@@ -1,28 +1,22 @@
 import streamlit as st
 import requests
 
-# Backend API URL
-BACKEND_URL = "http://127.0.0.1:8000/query"
+# Define FastAPI backend URL
+API_URL = "http://127.0.0.1:8000/query/"
 
-st.title("Startups Query Agent")
+st.title("🚀 Startups Query Agent")
+st.markdown("Ask questions about startups, and get instant responses using OpenAI-powered SQL querying!")
 
-# Input query from the user
-user_query = st.text_input("Enter your query:", placeholder="e.g., Show me the first 10 startups in the database.")
+# User input
+query = st.text_area("Enter your question about startups:", "")
 
-if st.button("Run Query"):
-    if user_query.strip():
-        # Send request to backend
-        try:
-            with st.spinner("Querying the database..."):
-                response = requests.post(BACKEND_URL, json={"query": user_query})
-                if response.status_code == 200:
-                    result = response.json().get("result", "No result found.")
-                    st.success("Query successful!")
-                    st.write(f"### Query Result:\n{result}")
-                else:
-                    st.error(f"Error: {response.status_code}, {response.json().get('detail')}")
-        except requests.exceptions.RequestException as e:
-            st.error(f"Failed to connect to the backend: {e}")
+if st.button("Submit Query"):
+    if query.strip():
+        # Send query request to FastAPI backend
+        response = requests.post(API_URL, json={"query": query})
+        if response.status_code == 200:
+            st.success(f"**Response:** {response.json()['result']}")
+        else:
+            st.error(f"Error: {response.json()['detail']}")
     else:
-        st.warning("Please enter a query to proceed!")
-
+        st.warning("Please enter a query before submitting.")
