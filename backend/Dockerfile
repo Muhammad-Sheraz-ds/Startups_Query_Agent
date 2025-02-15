@@ -18,10 +18,10 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt && \
     pip install -r backend/requirements.txt
 
-RUN curl -sSL https://ollama.com/install.sh | sh
+#RUN curl -sSL https://ollama.com/install.sh | sh
 
 # (Optional) If Ollama CLI is supported and you want to pull the model automatically:
-RUN ollama pull llama3.2
+#RUN ollama pull llama3.2
 
 # Copy the entire project into the container
 COPY . .

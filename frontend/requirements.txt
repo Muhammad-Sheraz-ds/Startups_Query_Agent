@@ -1,1 +1,3 @@
-# Placeholder content
+streamlit
+requests
+pandas

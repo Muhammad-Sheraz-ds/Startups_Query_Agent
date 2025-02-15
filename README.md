@@ -1,11 +1,18 @@
-Below is an updated README.md file that includes Docker deployment instructions, details on how to build and push images to Docker Hub, and explains how to run the project using Docker Compose with the specified container names.
 
----
-
-```markdown
 # Startups Query Agent
 
-Startups Query Agent is a comprehensive platform that collects, processes, and queries startup-related data with a focus on intelligent querying and user-friendly interaction. The platform leverages tools like Scrapy for web scraping, OpenAI's SQL Agent (or similar LLM integration via Ollama) for natural language queries, Streamlit for an interactive frontend, and FastAPI for backend API services. The data pipeline is designed to be robust, modular, and easy to set up.
+## **Demo**
+
+Below is a demonstration of the **Startups Query Agent** in action:
+
+<p align="center">
+  <img src="demo.png" alt="Demo Image" width="60%"/>
+</p>
+
+
+## **Overview**
+
+Startups Query Agent is a comprehensive platform that collects, processes, and queries startup-related data with a focus on intelligent querying and user-friendly interaction. The platform leverages tools like Scrapy for web scraping, an LLM-based SQL Agent (using Ollama's Llama 3.2 model) for natural language queries, Streamlit for an interactive frontend, and FastAPI for backend API services. The data pipeline is designed to be robust, modular, and easy to set up.
 
 ---
 
@@ -13,7 +20,7 @@ Startups Query Agent is a comprehensive platform that collects, processes, and q
 
 - **Data Scraping:** Efficiently scrapes structured data of startups from Y Combinator using Scrapy.  
 - **ETL Pipeline:** Extracts, transforms, and loads data into an SQLite database for querying.  
-- **SQL Agent Integration:** Leverages an LLM-based SQL Agent for seamless natural language queries.  
+- **SQL Agent Integration:** Uses an LLM-based SQL Agent powered by Ollama's Llama 3.2 model for natural language queries.  
 - **Interactive Frontend:** Provides a Streamlit-based user interface for insights and queries.  
 - **Scalable Backend:** Uses FastAPI to handle API requests between the frontend and database.  
 - **Docker Support:** Fully containerized for easy deployment and scaling.
@@ -38,7 +45,7 @@ Startups-Query-Agent/
 │   ├── requirements.txt            # Backend-specific dependencies
 │   ├── etl.py                      # ETL script for transforming scraped data
 │   ├── app.py                      # FastAPI application file
-│   ├── query_agent.py              # SQL Agent setup using an LLM (via Ollama)
+│   ├── query_agent.py              # SQL Agent setup using an LLM (via Ollama, model "llama3.2")
 ├── data/                           # Folder containing database files
 │   ├── database.db                 # SQLite database for processed data
 ├── YC-Scraper/                     # Folder for scraping-related code
@@ -85,7 +92,13 @@ Startups-Query-Agent/
 - pip
 - Docker (for containerized setup)
 - Docker Compose (for orchestrating containers)
-- OpenAI API Key (for SQL Agent integration)
+- **Ollama Installation:**  
+  Ensure that [Ollama](https://ollama.com) is installed on your system (macOS is currently the primary supported platform) and that the model "llama3.2" is available.  
+  You can pull the model using the following command:
+  ```bash
+  ollama pull llama3.2
+  ```
+  (This command may need to be run on a supported system where Ollama is fully functional.)
 
 ---
 
@@ -106,19 +119,14 @@ bash setup.sh
 
 ---
 
-### Step 3: Provide the OpenAI API Key
+### Step 3: (Optional) Configure Ollama
 
-Add your OpenAI API key to the environment by creating a `.env` file in the `backend/` directory:
-
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-Alternatively, export it directly:
-
+Make sure that Ollama is installed and that the model "llama3.2" is available.  
+If you're on macOS, you can run:
 ```bash
-export OPENAI_API_KEY=your_openai_api_key_here
+ollama pull llama3.2
 ```
+If you're using Docker, the backend container is set to use the model "llama3.2" via the Ollama Python client.
 
 ---
 
@@ -174,7 +182,7 @@ Access the app at `http://127.0.0.1:8501`.
 
 ## Docker Deployment
 
-This project is fully containerized using Docker. Below are the steps to build and deploy using Docker and Docker Hub.
+This project is fully containerized using Docker. Follow these steps to build and deploy using Docker and Docker Hub.
 
 ### Docker Files
 
@@ -249,4 +257,5 @@ services:
 
 - **Query Startups:** Use the Streamlit app at `http://localhost:8501` to enter natural language queries (e.g., "List all startups founded in 2020").
 - **Advanced Use Cases:** Access the FastAPI endpoints at `http://localhost:8000` for direct API interactions.
+
 
