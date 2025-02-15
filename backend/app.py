@@ -1,37 +1,38 @@
-# app.py
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from query_agent import setup_sql_agent
+# backend/app.py
 
-# Initialize FastAPI app
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from query_agent import sql_agent
+
 app = FastAPI()
 
-# Define request model for user queries
-class QueryInput(BaseModel):
+# Add CORS middleware to allow requests from the frontend.
+# You can restrict origins if needed (e.g., ["http://localhost:8501"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class QueryRequest(BaseModel):
     query: str
 
+@app.get("/")
+def home():
+    return {"message": "Welcome to the Startups Query Agent API!"}
+
 @app.post("/query/")
-async def execute_query(query_input: QueryInput):
-    """
-    API endpoint to execute SQL queries using the agent.
-    """
+def query_database(request: QueryRequest):
     try:
-        # Initialize SQL Agent
-        sql_agent = setup_sql_agent()
-
-        # Execute the query via the agent
-        result = sql_agent.invoke({"input": query_input.query})
-
-        # Check if the agent was stopped due to iteration limit or timeout
-        if 'Agent stopped due to iteration limit or time limit' in result.get('output', ''):
-            raise HTTPException(status_code=408, detail="Request timed out or exceeded iteration limit.")
-        
-        return {"query": query_input.query, "result": result["output"]}
-    
+        # Generate SQL query and execute it via the SQL agent.
+        response = sql_agent.invoke({"input": request.query})
+        return {"query": request.query, "result": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Run the FastAPI app
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

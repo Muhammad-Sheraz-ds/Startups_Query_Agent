@@ -3,15 +3,21 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: backend/Dockerfile
+    image: muhammadsheraza002/startups-backend:latest
+    container_name: startup-query-agent-api
     ports:
       - "8000:8000"
-    volumes:
-      - ./data:/app/data
+    environment:
+      - CHATOOLOMA_MODEL=llama3.2
+
   frontend:
-    image: streamlit
-    volumes:
-      - ./frontend:/app
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: muhammadsheraza002/startups-frontend:latest
+    container_name: startup-query-agent-frointend
     ports:
       - "8501:8501"
-    command: streamlit run app.py
+    depends_on:
+      - backend
